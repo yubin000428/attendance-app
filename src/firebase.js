@@ -1,8 +1,9 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA8HbcLzGA8iRslkJASo_omsVkpahRUUi0",
+  apiKey: "AIzaSyA8HbcLZgA8iRslkJAso_omsVkpahRUUi0",
   authDomain: "attendance-app-7fe54.firebaseapp.com",
   projectId: "attendance-app-7fe54",
   storageBucket: "attendance-app-7fe54.firebasestorage.app",
@@ -13,3 +14,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 export const db = getFirestore(app)
+export const auth = getAuth(app)

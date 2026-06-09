@@ -1,13 +1,21 @@
 <script setup>
 import { computed } from 'vue'
 import { getDocs } from 'firebase/firestore'
-import { db } from './firebase'
+import { db, auth } from './firebase'
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from 'firebase/auth'
 import { collection, addDoc } from 'firebase/firestore'
 import { ref, onMounted } from 'vue'
 import './styles/attendance.css'
 
 const isMenuOpen = ref(false)
 const currentTab = ref('today')
+
+const user = ref(null)
 
 const checkInTime = ref('')     // 출근 시간 Date 저장
 const checkInDisplay = ref('')  // 화면에 보여줄 출근 시간 저장  
@@ -21,18 +29,38 @@ const attendanceList = ref([])
 const pageTitle = computed(() => {
   switch (currentTab.value) {
     case 'today':
-      return '📅 오늘 근무'
+      return '오늘 근무'
 
     case 'history':
-      return '📋 출퇴근 기록'
+      return '출퇴근 기록'
 
     case 'settings':
-      return '⚙️ 설정'
+      return '설정'
 
     default:
       return '출퇴근 관리'
   }
 })
+
+async function login() {
+  try {
+    const provider = new GoogleAuthProvider()
+
+    const result = await signInWithPopup(
+      auth,
+      provider
+    )
+
+    user.value = result.user
+  } catch (error) {
+    console.error(error)
+    alert('로그인 실패')
+  }
+}
+
+async function logout() {
+  await signOut(auth)
+}
 
 async function checkIn() {
   if (checkInTime.value !== '') {
@@ -45,6 +73,10 @@ async function checkIn() {
   checkInTime.value = now
   checkInDisplay.value = now.toLocaleTimeString()
   await addDoc(collection(db, 'attendance'), {
+    uid: user.value.uid,
+    name: user.value.displayName,
+    email: user.value.email,
+
     type: 'checkin',
     time: now.toISOString()
   })
@@ -64,6 +96,10 @@ async function checkOut() {
 
   const now = new Date()
   await addDoc(collection(db, 'attendance'), {
+    uid: user.value.uid,
+    name: user.value.displayName,
+    email: user.value.email,
+
     type: 'checkout',
     time: now.toISOString()
   })
@@ -121,6 +157,9 @@ function resetData() {
 }
 
 onMounted(() => {
+  onAuthStateChanged(auth, (currentUser) => {
+    user.value = currentUser
+  })
   loadAttendance()
 })
 
@@ -138,6 +177,26 @@ onMounted(() => {
       </button>
 
       <h1>{{ pageTitle }}</h1>
+    </div>
+    <div class="user-box">
+
+      <button
+        v-if="!user"
+        @click="login"
+      >
+        Google 로그인
+      </button>
+
+      <div v-else>
+
+        👤 {{ user.displayName }}
+
+        <button @click="logout">
+          로그아웃
+        </button>
+
+      </div>
+
     </div>
 
    <div v-if="isMenuOpen" class="overlay"
