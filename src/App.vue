@@ -194,12 +194,7 @@ onMounted(() => {
 
       <div v-else>
 
-        👤 {{ user.displayName }}
-
-        <button @click="logout">
-          로그아웃
-        </button>
-
+        👤 {{ user.displayName }} 입장 !
       </div>
 
     </div>
@@ -219,11 +214,11 @@ onMounted(() => {
 
       <div>
         <div class="profile-name">
-          최유빈
+          {{ user?.displayName || '게스트' }}
         </div>
 
         <div class="profile-role">
-          관리자
+          {{ user ? user.email : '로그인 필요' }}
         </div>
       </div>
     </div>
@@ -263,7 +258,14 @@ onMounted(() => {
     <span>⚙️</span>
     <span>설정</span>
   </div>
-
+  <div
+    v-if="user"
+    class="menu-item logout-item"
+    @click="logout"
+  >
+    <span>🚪</span>
+    <span>로그아웃</span>
+  </div>
   <div class="menu-footer">
     v1.0.0
   </div>
