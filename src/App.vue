@@ -6,6 +6,8 @@ import { collection, addDoc } from 'firebase/firestore'
 import { ref, onMounted } from 'vue'
 import './styles/attendance.css'
 
+const currentTab = ref('today')
+
 const checkInTime = ref('')     // 출근 시간 Date 저장
 const checkInDisplay = ref('')  // 화면에 보여줄 출근 시간 저장  
 
@@ -148,53 +150,91 @@ onMounted(() => {
 
 <template>
   <div>
-    <h1>알바 출퇴근 관리</h1>
+    <br/><br/>
+    <h1>출퇴근 관리</h1>
 
-    <button @click="checkIn" :disabled="checkInTime !== ''">
-      출근하기
-    </button>
+    <div class="tab-menu">
+      <button @click="currentTab = 'today'">
+        오늘 근무
+      </button>
 
-    <p>출근시간: {{ checkInDisplay }}</p>
+      <button @click="currentTab = 'history'">
+        기록
+      </button>
+    </div>
 
-    <button
-      @click="checkOut"
-      :disabled="checkInTime === '' || checkOutTime !== ''"
-    >
-      퇴근하기
-    </button>
+    <!-- 오늘 근무 탭 -->
+    <div v-if="currentTab === 'today'">
 
-    <p></p>
-    <button @click="resetData">
-      초기화
-    </button>
+      <button @click="checkIn" :disabled="checkInTime !== ''">
+        출근하기
+      </button>
 
-    <p>퇴근시간: {{ checkOutDisplay }}</p>
+      <p>출근시간: {{ checkInDisplay }}</p>
 
-    <p>근무시간: {{ workHours }}</p>
+      <button
+        @click="checkOut"
+        :disabled="checkInTime === '' || checkOutTime !== ''"
+      >
+        퇴근하기
+      </button>
 
-    <h2>📋 출퇴근 기록</h2>
+      <p></p>
 
-    <ul class="attendance-list">
-      <li v-for="item in attendanceList" :key="item.id">
-        {{ new Date(item.time).toLocaleString('ko-KR') }}
-        {{ item.type === 'checkin' ? '🟢 출근' : '🔴 퇴근' }}
-      </li>
-    </ul>
+      <button @click="resetData">
+        초기화
+      </button>
 
-    <h2>📅 오늘 근무</h2>
+      <p>퇴근시간: {{ checkOutDisplay }}</p>
 
-<p>
-  출근:
-  {{ todayCheckIn
-      ? new Date(todayCheckIn.time).toLocaleTimeString('ko-KR')
-      : '-' }}
-</p>
+      <p>근무시간: {{ workHours }}</p>
 
-<p>
-  퇴근:
-  {{ todayCheckOut
-      ? new Date(todayCheckOut.time).toLocaleTimeString('ko-KR')
-      : '-' }}
-</p>
+      <div class="work-card">
+      <h2>📅 오늘 근무</h2>
+
+      <div class="work-row">
+        <span>🟢 출근</span>
+        <span>
+          {{
+            todayCheckIn
+              ? new Date(todayCheckIn.time).toLocaleTimeString('ko-KR')
+              : '-'
+          }}
+        </span>
+      </div>
+
+      <div class="work-row">
+        <span>🔴 퇴근</span>
+        <span>
+          {{
+            todayCheckOut
+              ? new Date(todayCheckOut.time).toLocaleTimeString('ko-KR')
+              : '-'
+          }}
+        </span>
+      </div>
+
+      <div class="work-row">
+        <span>⏰ 근무시간</span>
+        <span>{{ workHours || '-' }}</span>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- 기록 탭 -->
+    <div v-if="currentTab === 'history'">
+
+      <h2>📋 출퇴근 기록</h2>
+
+      <ul class="attendance-list">
+        <li v-for="item in attendanceList" :key="item.id">
+          {{ new Date(item.time).toLocaleString('ko-KR') }}
+          {{ item.type === 'checkin' ? '🟢 출근' : '🔴 퇴근' }}
+        </li>
+      </ul>
+
+    </div>
+
   </div>
 </template>
