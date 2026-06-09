@@ -164,30 +164,30 @@ onMounted(() => {
     </div>
 
     <!-- 오늘 근무 탭 -->
-    <div v-if="currentTab === 'today'">
-
-      <button @click="checkIn" :disabled="checkInTime !== ''">
-        출근하기
+    <div class="attendance-buttons">
+      <button
+        class="circle-btn checkin-btn"
+        @click="checkIn"
+        :disabled="checkInTime !== ''"
+      >
+        출근
       </button>
 
-      <p>출근시간: {{ checkInDisplay }}</p>
-
       <button
+        class="circle-btn checkout-btn"
         @click="checkOut"
         :disabled="checkInTime === '' || checkOutTime !== ''"
       >
-        퇴근하기
+        퇴근
       </button>
+    </div>
 
-      <p></p>
-
-      <button @click="resetData">
+      <button
+        class="reset-btn"
+        @click="resetData"
+      >
         초기화
       </button>
-
-      <p>퇴근시간: {{ checkOutDisplay }}</p>
-
-      <p>근무시간: {{ workHours }}</p>
 
       <div class="work-card">
       <h2>📅 오늘 근무</h2>
@@ -236,5 +236,4 @@ onMounted(() => {
 
     </div>
 
-  </div>
 </template>
