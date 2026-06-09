@@ -4,7 +4,7 @@ import { getDocs } from 'firebase/firestore'
 import { db, auth } from './firebase'
 import {
   GoogleAuthProvider,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
   onAuthStateChanged
 } from 'firebase/auth'
@@ -46,14 +46,21 @@ async function login() {
   try {
     const provider = new GoogleAuthProvider()
 
-    await signInWithRedirect(
+    const result = await signInWithPopup(
       auth,
       provider
     )
+
+    user.value = result.user
   } catch (error) {
-    console.error(error)
-    alert(error.code)
-  }
+  console.error(error)
+
+  alert(
+    error.code +
+    '\n' +
+    error.message
+  )
+}
 }
 
 async function logout() {
