@@ -4,7 +4,7 @@ import { getDocs } from 'firebase/firestore'
 import { db, auth } from './firebase'
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   onAuthStateChanged
 } from 'firebase/auth'
@@ -46,15 +46,13 @@ async function login() {
   try {
     const provider = new GoogleAuthProvider()
 
-    const result = await signInWithPopup(
+    await signInWithRedirect(
       auth,
       provider
     )
-
-    user.value = result.user
   } catch (error) {
     console.error(error)
-    alert('로그인 실패')
+    alert(error.code)
   }
 }
 
