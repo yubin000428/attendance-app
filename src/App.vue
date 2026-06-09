@@ -18,6 +18,21 @@ const checkOutDisplay = ref('') // 화면에 보여줄 퇴근 시간 저장
 const workHours = ref('')       // 근무 시간 저장
 
 const attendanceList = ref([])
+const pageTitle = computed(() => {
+  switch (currentTab.value) {
+    case 'today':
+      return '📅 오늘 근무'
+
+    case 'history':
+      return '📋 출퇴근 기록'
+
+    case 'settings':
+      return '⚙️ 설정'
+
+    default:
+      return '출퇴근 관리'
+  }
+})
 
 async function checkIn() {
   if (checkInTime.value !== '') {
@@ -121,7 +136,8 @@ onMounted(() => {
       >
         ☰
       </button>
-      <h1>출퇴근 관리</h1>
+
+      <h1>{{ pageTitle }}</h1>
     </div>
 
    <div v-if="isMenuOpen" class="overlay"
@@ -159,21 +175,27 @@ onMounted(() => {
 
   <div
     class="menu-item"
+    :class="{ active: currentTab === 'today' }"
     @click="currentTab='today'; isMenuOpen=false"
-  >
-    <span>🏠</span>
+    >
+    <span>📅</span>
     <span>오늘 근무</span>
   </div>
 
   <div
     class="menu-item"
+    :class="{ active: currentTab === 'history' }"
     @click="currentTab='history'; isMenuOpen=false"
   >
     <span>📋</span>
     <span>출퇴근 기록</span>
   </div>
 
-  <div class="menu-item">
+  <div
+    class="menu-item"
+    :class="{ active: currentTab === 'settings' }"
+    @click="currentTab='settings'; isMenuOpen=false"
+  >
     <span>⚙️</span>
     <span>설정</span>
   </div>
@@ -239,20 +261,6 @@ onMounted(() => {
         <span>{{ workHours || '-' }}</span>
       </div>
     </div>
-
-    </div>
-
-    <!-- 기록 탭 -->
-    <div v-if="currentTab === 'history'">
-
-      <h2>📋 출퇴근 기록</h2>
-
-      <ul class="attendance-list">
-        <li v-for="item in attendanceList" :key="item.id">
-          {{ new Date(item.time).toLocaleString('ko-KR') }}
-          {{ item.type === 'checkin' ? '🟢 출근' : '🔴 퇴근' }}
-        </li>
-      </ul>
 
     </div>
 
