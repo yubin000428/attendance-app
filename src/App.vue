@@ -48,6 +48,19 @@ const pageTitle = computed(() => {
   }
 })
 
+const ADMIN_EMAILS = [
+  'euloja428@gmail.com',
+  'yulim020477@gmail.com',
+  'gusalsno@gmail.com'
+]
+
+const isAdmin = computed(() => {
+  return (
+    user.value &&
+    ADMIN_EMAILS.includes(user.value.email)
+  )
+})
+
 async function login() {
   try {
     const provider = new GoogleAuthProvider()
@@ -257,6 +270,15 @@ onMounted(() => {
   >
     <span>📋</span>
     <span>출퇴근 기록</span>
+  </div>
+
+  <div
+    v-if="isAdmin"
+    class="menu-item"
+    @click="$router.push('/employees'); isMenuOpen=false"
+  >
+    <span>👥</span>
+    <span>직원 현황</span>
   </div>
 
   <div
