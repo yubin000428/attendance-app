@@ -18,11 +18,6 @@ const workHours = ref('')       // 근무 시간 저장
 
 const attendanceList = ref([])
 
-const savedCheckOut = localStorage.getItem('checkOutDisplay')
-
-if (savedCheckOut) {
-  checkOutDisplay.value = savedCheckOut
-}
 async function checkIn() {
   if (checkInTime.value !== '') {
     alert('이미 출근했습니다.')
@@ -33,12 +28,11 @@ async function checkIn() {
   console.log('출근 버튼 클릭')
   checkInTime.value = now
   checkInDisplay.value = now.toLocaleTimeString()
-  console.log('firebase 저장 직전')
   await addDoc(collection(db, 'attendance'), {
     type: 'checkin',
     time: now.toISOString()
   })
-  console.log('firebase 저장 성공')
+  await loadAttendance()
 }
 
 async function checkOut() {
@@ -74,8 +68,7 @@ async function checkOut() {
     } else {
       workHours.value = `${hours}시간 ${minutes}분 근무`
     }
-  localStorage.setItem('workHours', workHours.value)
-  localStorage.setItem('checkOutTime', now.toISOString())
+    await loadAttendance()
 }
 
 async function loadAttendance() {
@@ -109,43 +102,12 @@ function resetData() {
   checkOutDisplay.value = ''
 
   workHours.value = ''
-
-  localStorage.removeItem('checkInDisplay')
-  localStorage.removeItem('checkOutDisplay')
-  localStorage.removeItem('workHours')
 }
 
 onMounted(() => {
-  const savedCheckIn = localStorage.getItem('checkInDisplay')
-
-  if (savedCheckIn) {
-    checkInDisplay.value = savedCheckIn
-  }
-
-  const savedCheckOut = localStorage.getItem('checkOutDisplay')
-
-  if (savedCheckOut) {
-    checkOutDisplay.value = savedCheckOut
-  }
-  const savedWorkHours = localStorage.getItem('workHours')
-
-  if (savedWorkHours) {
-    workHours.value = savedWorkHours
-  }
-
-  const savedCheckInTime = localStorage.getItem('checkInTime')
-
-  if (savedCheckInTime) {
-    checkInTime.value = new Date(savedCheckInTime)
-  }
-
-  const savedCheckOutTime = localStorage.getItem('checkOutTime')
-
-  if (savedCheckOutTime) {
-    checkOutTime.value = new Date(savedCheckOutTime)
-  }
   loadAttendance()
 })
+
 </script>
 
 <template>
@@ -168,7 +130,7 @@ onMounted(() => {
       <button
         class="circle-btn checkin-btn"
         @click="checkIn"
-        :disabled="checkInTime !== ''"
+        :disabled="!!checkInTime"
       >
         출근
       </button>
@@ -176,7 +138,7 @@ onMounted(() => {
       <button
         class="circle-btn checkout-btn"
         @click="checkOut"
-        :disabled="checkInTime === '' || checkOutTime !== ''"
+        :disabled="!checkInTime || !!checkOutTime"
       >
         퇴근
       </button>
