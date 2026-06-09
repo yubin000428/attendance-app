@@ -11,6 +11,8 @@ import {
 import { collection, addDoc } from 'firebase/firestore'
 import { ref, onMounted } from 'vue'
 import './styles/attendance.css'
+import { useRoute } from 'vue-router'
+
 
 const isMenuOpen = ref(false)
 const currentTab = ref('today')
@@ -26,16 +28,20 @@ const checkOutDisplay = ref('') // 화면에 보여줄 퇴근 시간 저장
 const workHours = ref('')       // 근무 시간 저장
 
 const attendanceList = ref([])
+const route = useRoute()
 const pageTitle = computed(() => {
-  switch (currentTab.value) {
-    case 'today':
+  switch (route.path) {
+    case '/':
       return '오늘 근무'
 
-    case 'history':
+    case '/history':
       return '출퇴근 기록'
 
-    case 'settings':
+    case '/settings':
       return '설정'
+
+    case '/employees':
+      return '직원 현황'
 
     default:
       return '출퇴근 관리'
@@ -65,6 +71,9 @@ async function login() {
 
 async function logout() {
   await signOut(auth)
+
+  currentTab.value = 'today'
+  isMenuOpen.value = false
 }
 
 async function checkIn() {
@@ -234,8 +243,8 @@ onMounted(() => {
 
   <div
     class="menu-item"
-    :class="{ active: currentTab === 'today' }"
-    @click="currentTab='today'; isMenuOpen=false"
+    :class="{ active: route.path === '/today' }"
+    @click="$router.push('/today'); isMenuOpen=false"
     >
     <span>📅</span>
     <span>오늘 근무</span>
@@ -243,8 +252,8 @@ onMounted(() => {
 
   <div
     class="menu-item"
-    :class="{ active: currentTab === 'history' }"
-    @click="currentTab='history'; isMenuOpen=false"
+    :class="{ active: route.path === '/history' }"
+    @click="$router.push('/history'); isMenuOpen=false"
   >
     <span>📋</span>
     <span>출퇴근 기록</span>
@@ -252,8 +261,8 @@ onMounted(() => {
 
   <div
     class="menu-item"
-    :class="{ active: currentTab === 'settings' }"
-    @click="currentTab='settings'; isMenuOpen=false"
+    :class="{ active: route.path === '/settings' }"
+    @click="$router.push('/settings'); isMenuOpen=false"
   >
     <span>⚙️</span>
     <span>설정</span>
