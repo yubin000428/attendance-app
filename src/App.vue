@@ -1,5 +1,10 @@
 <script setup>
+import { computed } from 'vue'
+import { getDocs } from 'firebase/firestore'
+import { db } from './firebase'
+import { collection, addDoc } from 'firebase/firestore'
 import { ref, onMounted } from 'vue'
+import './styles/attendance.css'
 
 const checkInTime = ref('')     // 출근 시간 Date 저장
 const checkInDisplay = ref('')  // 화면에 보여줄 출근 시간 저장  
@@ -9,26 +14,32 @@ const checkOutDisplay = ref('') // 화면에 보여줄 퇴근 시간 저장
 
 const workHours = ref('')       // 근무 시간 저장
 
+const attendanceList = ref([])
+
 const savedCheckOut = localStorage.getItem('checkOutDisplay')
 
 if (savedCheckOut) {
   checkOutDisplay.value = savedCheckOut
 }
-function checkIn() {
+async function checkIn() {
   if (checkInTime.value !== '') {
     alert('이미 출근했습니다.')
     return
   }
 
   const now = new Date()
-
+  console.log('출근 버튼 클릭')
   checkInTime.value = now
   checkInDisplay.value = now.toLocaleTimeString()
-  localStorage.setItem('checkInDisplay', checkInDisplay.value)
-  localStorage.setItem('checkInTime', now.toISOString())
+  console.log('firebase 저장 직전')
+  await addDoc(collection(db, 'attendance'), {
+    type: 'checkin',
+    time: now.toISOString()
+  })
+  console.log('firebase 저장 성공')
 }
 
-function checkOut() {
+async function checkOut() {
   // 비활성화로 버튼은 막아놨지만 로직 방어역할
   if (!checkInTime.value) {
     alert('먼저 출근을 해주세요.')
@@ -38,12 +49,16 @@ function checkOut() {
     alert('이미 퇴근했습니다.')
     return
   }
+
   const now = new Date()
+  await addDoc(collection(db, 'attendance'), {
+    type: 'checkout',
+    time: now.toISOString()
+  })
 
   checkOutTime.value = now
   checkOutDisplay.value = now.toLocaleTimeString()
   workHours.value = '계산중...'
-  localStorage.setItem('checkOutDisplay', checkOutDisplay.value)
 
   const diff = checkOutTime.value - checkInTime.value
   const totalSeconds = Math.floor(diff / 1000)
@@ -60,6 +75,29 @@ function checkOut() {
   localStorage.setItem('workHours', workHours.value)
   localStorage.setItem('checkOutTime', now.toISOString())
 }
+
+async function loadAttendance() {
+  const snapshot = await getDocs(collection(db, 'attendance'))
+
+  attendanceList.value = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }))
+
+  attendanceList.value.sort(
+    (a, b) => new Date(b.time) - new Date(a.time)
+  )
+
+  console.log(attendanceList.value)
+}
+
+const todayCheckIn = computed(() =>
+  attendanceList.value.find(item => item.type === 'checkin')
+)
+
+const todayCheckOut = computed(() =>
+  attendanceList.value.find(item => item.type === 'checkout')
+)
 
 function resetData() {
   checkInTime.value = ''
@@ -104,6 +142,7 @@ onMounted(() => {
   if (savedCheckOutTime) {
     checkOutTime.value = new Date(savedCheckOutTime)
   }
+  loadAttendance()
 })
 </script>
 
@@ -132,5 +171,30 @@ onMounted(() => {
     <p>퇴근시간: {{ checkOutDisplay }}</p>
 
     <p>근무시간: {{ workHours }}</p>
+
+    <h2>📋 출퇴근 기록</h2>
+
+    <ul class="attendance-list">
+      <li v-for="item in attendanceList" :key="item.id">
+        {{ new Date(item.time).toLocaleString('ko-KR') }}
+        {{ item.type === 'checkin' ? '🟢 출근' : '🔴 퇴근' }}
+      </li>
+    </ul>
+
+    <h2>📅 오늘 근무</h2>
+
+<p>
+  출근:
+  {{ todayCheckIn
+      ? new Date(todayCheckIn.time).toLocaleTimeString('ko-KR')
+      : '-' }}
+</p>
+
+<p>
+  퇴근:
+  {{ todayCheckOut
+      ? new Date(todayCheckOut.time).toLocaleTimeString('ko-KR')
+      : '-' }}
+</p>
   </div>
 </template>
