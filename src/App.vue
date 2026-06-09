@@ -6,6 +6,7 @@ import { collection, addDoc } from 'firebase/firestore'
 import { ref, onMounted } from 'vue'
 import './styles/attendance.css'
 
+const isMenuOpen = ref(false)
 const currentTab = ref('today')
 
 const checkInTime = ref('')     // 출근 시간 Date 저장
@@ -113,18 +114,75 @@ onMounted(() => {
 <template>
   <div>
     <br/><br/>
-    <h1>출퇴근 관리</h1>
-
-    <div class="tab-menu">
-      <button @click="currentTab = 'today'">
-        오늘 근무
+    <div class="header">
+      <button
+        class="menu-btn"
+        @click="isMenuOpen = !isMenuOpen"
+      >
+        ☰
       </button>
-
-      <button @click="currentTab = 'history'">
-        기록
-      </button>
+      <h1>출퇴근 관리</h1>
     </div>
 
+   <div v-if="isMenuOpen" class="overlay"
+     @click="isMenuOpen = false">
+</div>
+
+<div v-if="isMenuOpen" class="side-menu">
+
+  <div class="menu-header">
+
+    <div class="profile-box">
+      <div class="profile-avatar">
+        👤
+      </div>
+
+      <div>
+        <div class="profile-name">
+          최유빈
+        </div>
+
+        <div class="profile-role">
+          관리자
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="close-btn"
+      @click="isMenuOpen = false"
+    >
+      ✕
+    </button>
+
+  </div>
+
+  <div
+    class="menu-item"
+    @click="currentTab='today'; isMenuOpen=false"
+  >
+    <span>🏠</span>
+    <span>오늘 근무</span>
+  </div>
+
+  <div
+    class="menu-item"
+    @click="currentTab='history'; isMenuOpen=false"
+  >
+    <span>📋</span>
+    <span>출퇴근 기록</span>
+  </div>
+
+  <div class="menu-item">
+    <span>⚙️</span>
+    <span>설정</span>
+  </div>
+
+  <div class="menu-footer">
+    v1.0.0
+  </div>
+
+  </div>
     <!-- 오늘 근무 탭 -->
     <div class="attendance-buttons">
       <button
