@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import TodayView from '../views/TodayView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import EmployeeView from '../views/EmployeeView.vue'
 
 const routes = [
   {
@@ -16,6 +17,10 @@ const routes = [
   {
     path: '/settings',
     component: SettingsView
+  },
+  {
+    path: '/employees',
+    component: EmployeeView
   }
 ]
 

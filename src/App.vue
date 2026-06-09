@@ -49,7 +49,6 @@ const pageTitle = computed(() => {
 })
 
 const ADMIN_EMAILS = [
-  'euloja428@gmail.com',
   'yulim020477@gmail.com',
   'gusalsno@gmail.com'
 ]
