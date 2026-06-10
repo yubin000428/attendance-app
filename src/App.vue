@@ -92,12 +92,15 @@ onMounted(() => {
       >
         ☰
       </button>
+      <div v-if="user" class="profile-circle">
+        {{ user.displayName?.charAt(0).toUpperCase() }}
+      </div>
       
 
       <div>
-    <h1>{{ pageTitle }}</h1>
+        <h1 class="page-title">{{ pageTitle }}</h1>
 
-  </div>
+      </div>
     </div>
     <div class="user-box">
 
