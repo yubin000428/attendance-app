@@ -1,7 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import {
+  ref,
+  computed,
+  onMounted
+} from 'vue'
 import { db } from '../firebase'
-import { computed } from 'vue'
 
 import {
   collection,

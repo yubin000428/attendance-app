@@ -236,7 +236,15 @@ onMounted(() => {
     <span>내 출퇴근 기록</span>
   </div>
 
-  
+  <div
+    v-if="isAdmin"
+    class="menu-item"
+    @click="$router.push('/employees'); isMenuOpen=false"
+  >
+    <span>👥</span>
+    <span>직원 현황</span>
+  </div>
+
   <div
     class="menu-item"
     :class="{ active: route.path === '/settings' }"
@@ -245,14 +253,7 @@ onMounted(() => {
     <span>⚙️</span>
     <span>급여 계산</span>
   </div>
-  <div
-    class="menu-item"
-    :class="{ active: route.path === '/settings' }"
-    @click="$router.push('/settings'); isMenuOpen=false"
-  >
-    <span>⚙️</span>
-    <span>특이사항</span>
-  </div>
+ 
   <div
     v-if="user"
     class="menu-item logout-item"
