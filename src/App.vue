@@ -143,7 +143,10 @@ onMounted(() => {
       <div class="login-card">
 
         <div class="login-logo">
-          ⏰
+          <img
+            src="/logo.png"
+            alt="logo"
+          />
         </div>
 
         <h1>출퇴근 관리</h1>
