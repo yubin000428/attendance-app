@@ -36,9 +36,9 @@ li {
 
   border-radius: 24px;
 
-  padding: 24px;
+  padding: 20px;
 
-  margin-top: 50px;
+  margin-top: 45px;
 
   box-shadow:
     0 8px 25px rgba(0,0,0,.06);
@@ -160,7 +160,7 @@ li {
   margin-bottom: 20px;
   padding: 16px 20px;
 
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
 }
 
