@@ -1,3 +1,8 @@
+body {
+  background: #f7f8fa;
+  font-family: 'Pretendard', sans-serif;
+}
+
 ul {
   list-style: none;
   padding: 0;
@@ -27,22 +32,34 @@ li {
 }
 
 .work-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 24px;
+
+  margin-top: 50px;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.06);
 }
 
 .work-card h2 {
-  margin-bottom: 15px;
+  margin-bottom: 30px;
+
+  font-size: 28px;
 }
 
 .work-row {
   display: flex;
+
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+
+  align-items: center;
+
+  padding: 18px 0;
+
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .work-row:last-child {
@@ -142,6 +159,15 @@ li {
   gap: 25px;
   margin-bottom: 20px;
   padding: 16px 20px;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #777;
 }
 
 .menu-btn {
@@ -444,11 +470,3 @@ li {
   background: #b91c1c;
 }
 
-.header-subtitle {
-  margin-top: -12px; /* 제목이랑 더 붙게 */
-
-  font-size: 18px;
-  font-weight: 500;
-
-  color: #666;
-}
