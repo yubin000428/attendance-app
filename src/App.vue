@@ -72,6 +72,7 @@ async function login() {
 async function logout() {
   await signOut(auth)
 
+  window.location.reload()
   isMenuOpen.value = false
 }
 
