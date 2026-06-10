@@ -85,7 +85,6 @@ onMounted(() => {
 
 <template>
   <div>
-    <br/><br/>
     <div class="header">
       <button
         class="menu-btn"

@@ -139,7 +139,7 @@ li {
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 25px;
   margin-bottom: 20px;
   padding: 16px 20px;
 }
