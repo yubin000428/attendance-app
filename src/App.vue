@@ -138,7 +138,31 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+<div>
+    <div v-if="!user" class="login-page">
+      <div class="login-card">
+
+        <div class="login-logo">
+          ⏰
+        </div>
+
+        <h1>출퇴근 관리</h1>
+
+        <p>
+          직원의 출근 · 퇴근을<br>
+          간편하게 기록하세요
+        </p>
+
+        <button
+          class="login-btn"
+          @click="login"
+        >
+          Google로 시작하기
+        </button>
+      </div>
+  </div>
+      
+  <div v-else>
     <div class="header">
       <button
         class="menu-btn"
@@ -156,16 +180,6 @@ onMounted(() => {
 
       </div>
     </div>
-    <div class="user-box">
-
-      <button
-        v-if="!user"
-        @click="login"
-      >
-        Google 로그인
-      </button>
-    </div>
-
    <div v-if="isMenuOpen" class="overlay"
      @click="isMenuOpen = false">
 </div>
@@ -188,6 +202,7 @@ onMounted(() => {
           {{ user ? user.email : '로그인 필요' }}
         </div>
       </div>
+      
     </div>
 
     <button
@@ -255,10 +270,9 @@ onMounted(() => {
   </div>
 
   </div>
-    <div>
+    <router-view />
 
-      <router-view />
-    </div>
+    
 
     </div>
 <div
@@ -286,5 +300,8 @@ onMounted(() => {
     </div>
 
   </div>
+
+</div>
+
 </div>
 </template>
