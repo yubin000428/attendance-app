@@ -443,3 +443,12 @@ li {
 .modal-buttons button:last-child:hover {
   background: #b91c1c;
 }
+
+.header-subtitle {
+  margin-top: -12px; /* 제목이랑 더 붙게 */
+
+  font-size: 18px;
+  font-weight: 500;
+
+  color: #666;
+}

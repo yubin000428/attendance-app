@@ -92,8 +92,15 @@ onMounted(() => {
       >
         ☰
       </button>
+      
 
-      <h1>{{ pageTitle }}</h1>
+      <div>
+    <h1>{{ pageTitle }}</h1>
+
+    <div v-if="user" class="header-subtitle">
+      ✨ {{ user.displayName }} ✨
+    </div>
+  </div>
     </div>
     <div class="user-box">
 
@@ -103,12 +110,6 @@ onMounted(() => {
       >
         Google 로그인
       </button>
-
-      <div v-else>
-
-        👤 {{ user.displayName }} 입장 !
-      </div>
-
     </div>
 
    <div v-if="isMenuOpen" class="overlay"
