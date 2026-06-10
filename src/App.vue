@@ -236,15 +236,7 @@ onMounted(() => {
     <span>내 출퇴근 기록</span>
   </div>
 
-  <div
-    v-if="isAdmin"
-    class="menu-item"
-    @click="$router.push('/employees'); isMenuOpen=false"
-  >
-    <span>👥</span>
-    <span>직원 현황</span>
-  </div>
-
+  
   <div
     class="menu-item"
     :class="{ active: route.path === '/settings' }"
