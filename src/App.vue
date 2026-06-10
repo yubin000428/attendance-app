@@ -96,10 +96,11 @@ onMounted(() => {
 
       <div>
     <h1>{{ pageTitle }}</h1>
-  </div>
-  <div v-if="user" class="header-subtitle">
+
+    <div v-if="user" class="header-subtitle">
       ✨ {{ user.displayName }} ✨
     </div>
+  </div>
     </div>
     <div class="user-box">
 
