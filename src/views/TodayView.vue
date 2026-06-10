@@ -1,15 +1,29 @@
 <script setup>
+import { computed } from 'vue'
 import { useAttendance } from '../composables/useAttendance'
+import { onMounted } from 'vue'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../firebase'
 
 const {
   checkInTime,
   checkOutTime,
-  todayCheckIn,
-  todayCheckOut,
   workHours,
   checkIn,
-  checkOut
+  checkOut,
+  loadTodayStatus
 } = useAttendance()
+
+const isCheckedIn = computed(() => checkInTime.value !== '')
+const isCheckedOut = computed(() => checkOutTime.value !== '')
+
+onMounted(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loadTodayStatus()
+    }
+  })
+})
 </script>
 
 
@@ -20,7 +34,7 @@ const {
       <button
         class="circle-btn checkin-btn"
         @click="checkIn"
-        :disabled="!!checkInTime"
+        :disabled="isCheckedIn"
       >
         출근
       </button>
@@ -28,7 +42,7 @@ const {
       <button
         class="circle-btn checkout-btn"
         @click="checkOut"
-        :disabled="!checkInTime || !!checkOutTime"
+        :disabled="!isCheckedIn || isCheckedOut"
       >
         퇴근
       </button>
@@ -36,20 +50,19 @@ const {
 
       <button
         class="reset-btn"
-        @click="resetData"
       >
         초기화
       </button>
 
       <div class="work-card">
-      <h2>📅 오늘 근무</h2>
+      <h2>📅 오늘 근무 확인</h2>
 
       <div class="work-row">
         <span>🟢 출근</span>
         <span>
           {{
-            todayCheckIn
-              ? new Date(todayCheckIn.time).toLocaleTimeString('ko-KR')
+            checkInTime
+              ? checkInTime.toLocaleTimeString('ko-KR')
               : '-'
           }}
         </span>
@@ -59,13 +72,14 @@ const {
         <span>🔴 퇴근</span>
         <span>
           {{
-            todayCheckOut
-              ? new Date(todayCheckOut.time).toLocaleTimeString('ko-KR')
+            checkOutTime
+              ? checkOutTime.toLocaleTimeString('ko-KR')
               : '-'
           }}
         </span>
       </div>
-
+      
+      
       <div class="work-row">
         <span>⏰ 근무시간</span>
         <span>{{ workHours || '-' }}</span>

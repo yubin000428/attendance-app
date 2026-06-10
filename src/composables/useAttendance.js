@@ -1,6 +1,12 @@
 import { ref, computed } from 'vue'
 import { db } from '../firebase'
-import { collection, addDoc, getDocs } from 'firebase/firestore'
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from 'firebase/firestore'
 import { auth } from '../firebase'
 
 const attendanceList = ref([])
@@ -28,6 +34,63 @@ export function useAttendance() {
     )
   }
 
+  // 얘가 출근을 이미했는지 ? firebase에서 데이터 불러오기
+  async function loadTodayStatus() {
+
+    const user = auth.currentUser
+
+    if (!user) return
+
+    const snapshot = await getDocs(
+      query(
+        collection(db, 'attendance'),
+        where('uid', '==', user.uid)
+      )
+    )
+
+    const myRecords = snapshot.docs.map(doc => doc.data())
+
+    const lastCheckIn = myRecords
+      .filter(item => item.type === 'checkin')
+      .sort(
+        (a, b) =>
+          new Date(b.time) - new Date(a.time)
+      )[0]
+
+    const lastCheckOut = myRecords
+      .filter(item => item.type === 'checkout')
+      .sort(
+        (a, b) =>
+          new Date(b.time) - new Date(a.time)
+      )[0]
+
+    if (lastCheckIn) {
+      checkInTime.value = new Date(lastCheckIn.time)
+    }
+
+    if (lastCheckOut) {
+      checkOutTime.value = new Date(lastCheckOut.time)
+    }
+    if (checkInTime.value && checkOutTime.value) {
+
+    const diff =
+      checkOutTime.value.getTime() -
+      checkInTime.value.getTime()
+
+    const totalMinutes =
+      Math.floor(diff / 1000 / 60)
+
+    const hours =
+      Math.floor(totalMinutes / 60)
+
+    const minutes =
+      totalMinutes % 60
+
+    workHours.value =
+      `${hours}시간 ${minutes}분`
+  }
+  }
+    
  async function checkIn() {
 
   const user = auth.currentUser
@@ -45,6 +108,7 @@ export function useAttendance() {
   const now = new Date()
 
   checkInTime.value = now
+   console.log('출근 후', checkInTime.value)
 
   await addDoc(
     collection(db, 'attendance'),
@@ -132,6 +196,7 @@ export function useAttendance() {
     checkOut,
 
     loadAttendance,
+    loadTodayStatus,
 
     todayCheckIn,
     todayCheckOut

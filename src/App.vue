@@ -1,41 +1,28 @@
 <script setup>
-import { computed } from 'vue'
-import { getDocs } from 'firebase/firestore'
-import { db, auth } from './firebase'
+import { computed, ref, onMounted } from 'vue'
+import { auth } from './firebase'
 import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
   onAuthStateChanged
 } from 'firebase/auth'
-import { collection, addDoc } from 'firebase/firestore'
-import { ref, onMounted } from 'vue'
-import './styles/attendance.css'
 import { useRoute } from 'vue-router'
 
+import './styles/attendance.css'
 
 const isMenuOpen = ref(false)
-const currentTab = ref('today')
-
 const user = ref(null)
 
-const checkInTime = ref('')     // 출근 시간 Date 저장
-const checkInDisplay = ref('')  // 화면에 보여줄 출근 시간 저장  
-
-const checkOutTime = ref('')    // 퇴근 시간 Date 저장
-const checkOutDisplay = ref('') // 화면에 보여줄 퇴근 시간 저장
-
-const workHours = ref('')       // 근무 시간 저장
-
-const attendanceList = ref([])
 const route = useRoute()
+
 const pageTitle = computed(() => {
   switch (route.path) {
     case '/':
-      return '오늘 근무'
+      return '오늘 근무 확인'
 
     case '/history':
-      return '출퇴근 기록'
+      return '내 출퇴근 기록'
 
     case '/settings':
       return '설정'
@@ -70,125 +57,29 @@ async function login() {
     )
 
     user.value = result.user
-  } catch (error) {
-  console.error(error)
 
-  alert(
-    error.code +
-    '\n' +
-    error.message
-  )
-}
+  } catch (error) {
+    console.error(error)
+
+    alert(
+      error.code +
+      '\n' +
+      error.message
+    )
+  }
 }
 
 async function logout() {
   await signOut(auth)
 
-  currentTab.value = 'today'
   isMenuOpen.value = false
-}
-
-async function checkIn() {
-  if (checkInTime.value !== '') {
-    alert('이미 출근했습니다.')
-    return
-  }
-
-  const now = new Date()
-  console.log('출근 버튼 클릭')
-  checkInTime.value = now
-  checkInDisplay.value = now.toLocaleTimeString()
-  await addDoc(collection(db, 'attendance'), {
-    uid: user.value.uid,
-    name: user.value.displayName,
-    email: user.value.email,
-
-    type: 'checkin',
-    time: now.toISOString()
-  })
-  await loadAttendance()
-}
-
-async function checkOut() {
-  // 비활성화로 버튼은 막아놨지만 로직 방어역할
-  if (!checkInTime.value) {
-    alert('먼저 출근을 해주세요.')
-    return
-  }
-  if (checkOutTime.value) {
-    alert('이미 퇴근했습니다.')
-    return
-  }
-
-  const now = new Date()
-  await addDoc(collection(db, 'attendance'), {
-    uid: user.value.uid,
-    name: user.value.displayName,
-    email: user.value.email,
-
-    type: 'checkout',
-    time: now.toISOString()
-  })
-
-  checkOutTime.value = now
-  checkOutDisplay.value = now.toLocaleTimeString()
-  workHours.value = '계산중...'
-
-  const diff = checkOutTime.value - checkInTime.value
-  const totalSeconds = Math.floor(diff / 1000)
-  const totalMinutes = Math.floor(diff / 1000 / 60)
-  const hours = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
-  if (totalSeconds < 60) {
-      workHours.value = `${totalSeconds}초 근무`
-    } else if (hours === 0) {
-      workHours.value = `${minutes}분 근무`
-    } else {
-      workHours.value = `${hours}시간 ${minutes}분 근무`
-    }
-    await loadAttendance()
-}
-
-async function loadAttendance() {
-  const snapshot = await getDocs(collection(db, 'attendance'))
-
-  attendanceList.value = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }))
-
-  attendanceList.value.sort(
-    (a, b) => new Date(b.time) - new Date(a.time)
-  )
-
-  console.log(attendanceList.value)
-}
-
-const todayCheckIn = computed(() =>
-  attendanceList.value.find(item => item.type === 'checkin')
-)
-
-const todayCheckOut = computed(() =>
-  attendanceList.value.find(item => item.type === 'checkout')
-)
-
-function resetData() {
-  checkInTime.value = ''
-  checkOutTime.value = ''
-
-  checkInDisplay.value = ''
-  checkOutDisplay.value = ''
-
-  workHours.value = ''
 }
 
 onMounted(() => {
   onAuthStateChanged(auth, (currentUser) => {
     user.value = currentUser
   })
-  loadAttendance()
 })
-
 </script>
 
 <template>
@@ -259,7 +150,7 @@ onMounted(() => {
     @click="$router.push('/'); isMenuOpen=false"
     >
     <span>📅</span>
-    <span>오늘 근무</span>
+    <span>오늘 근무 확인</span>
   </div>
 
   <div
@@ -268,7 +159,7 @@ onMounted(() => {
     @click="$router.push('/history'); isMenuOpen=false"
   >
     <span>📋</span>
-    <span>출퇴근 기록</span>
+    <span>내 출퇴근 기록</span>
   </div>
 
   <div
@@ -286,7 +177,15 @@ onMounted(() => {
     @click="$router.push('/settings'); isMenuOpen=false"
   >
     <span>⚙️</span>
-    <span>설정</span>
+    <span>급여 계산</span>
+  </div>
+  <div
+    class="menu-item"
+    :class="{ active: route.path === '/settings' }"
+    @click="$router.push('/settings'); isMenuOpen=false"
+  >
+    <span>⚙️</span>
+    <span>특이사항</span>
   </div>
   <div
     v-if="user"

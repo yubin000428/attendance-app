@@ -103,6 +103,13 @@ li {
   transition: all 0.2s ease;
 }
 
+.circle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .checkin-btn {
   background: linear-gradient(
     145deg,
