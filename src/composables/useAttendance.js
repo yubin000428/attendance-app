@@ -17,6 +17,17 @@ const workHours = ref('')
 
 const user = auth.currentUser
 
+function getWorkDate() {
+  const now = new Date()
+
+  // 새벽 3시 이전이면 전날로 처리
+  if (now.getHours() < 3) {
+    now.setDate(now.getDate() - 1)
+  }
+
+  return now.toISOString().split('T')[0]
+}
+
 export function useAttendance() {
 
   async function loadAttendance() {
@@ -50,20 +61,26 @@ export function useAttendance() {
 
     const myRecords = snapshot.docs.map(doc => doc.data())
 
-    const lastCheckIn = myRecords
+    const todayWorkDate = getWorkDate()
+
+    const todayRecords = myRecords.filter(
+      item => item.workDate === todayWorkDate
+    )
+
+    const lastCheckIn = todayRecords
       .filter(item => item.type === 'checkin')
       .sort(
         (a, b) =>
           new Date(b.time) - new Date(a.time)
       )[0]
 
-    const lastCheckOut = myRecords
+    const lastCheckOut = todayRecords
       .filter(item => item.type === 'checkout')
       .sort(
         (a, b) =>
           new Date(b.time) - new Date(a.time)
       )[0]
-
+      
     if (lastCheckIn) {
       checkInTime.value = new Date(lastCheckIn.time)
     }
@@ -89,7 +106,7 @@ export function useAttendance() {
     workHours.value =
       `${hours}시간 ${minutes}분`
   }
-  }
+}
     
  async function checkIn() {
 
@@ -116,15 +133,18 @@ export function useAttendance() {
       uid: user.uid,
       name: user.displayName,
       email: user.email,
+
       type: 'checkin',
-      time: now.toISOString()
+      time: now.toISOString(),
+
+      workDate: getWorkDate()
     }
   )
 
   await loadAttendance()
 }
 
-  async function checkOut() {
+  async function checkOut(memo = '') {
 
     const user = auth.currentUser
 
@@ -146,16 +166,20 @@ export function useAttendance() {
     const now = new Date()
 
     await addDoc(
-        collection(db, 'attendance'),
-        {
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
+    collection(db, 'attendance'),
+    {
+      uid: user.uid,
+      name: user.displayName,
+      email: user.email,
 
-        type: 'checkout',
-        time: now.toISOString()
-        }
-    )
+      memo,
+
+      type: 'checkout',
+      time: now.toISOString(),
+
+      workDate: getWorkDate()
+    }
+  )
 
     checkOutTime.value = now
 

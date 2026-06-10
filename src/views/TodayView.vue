@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAttendance } from '../composables/useAttendance'
 import { onMounted } from 'vue'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -16,6 +16,19 @@ const {
 
 const isCheckedIn = computed(() => checkInTime.value !== '')
 const isCheckedOut = computed(() => checkOutTime.value !== '')
+
+// 퇴근 시 특이사항 전달
+const showMemoModal = ref(false)
+const memo = ref('')
+
+async function submitCheckOut() {
+
+  await checkOut(memo.value)
+
+  memo.value = ''
+
+  showMemoModal.value = false
+}
 
 onMounted(() => {
   onAuthStateChanged(auth, (user) => {
@@ -41,7 +54,7 @@ onMounted(() => {
 
       <button
         class="circle-btn checkout-btn"
-        @click="checkOut"
+        @click="showMemoModal = true"
         :disabled="!isCheckedIn || isCheckedOut"
       >
         퇴근
@@ -83,6 +96,38 @@ onMounted(() => {
       <div class="work-row">
         <span>⏰ 근무시간</span>
         <span>{{ workHours || '-' }}</span>
+      </div>
+    </div>
+
+    <div
+      v-if="showMemoModal"
+      class="modal-overlay"
+    >
+      <div class="memo-modal">
+
+        <h3>퇴근 특이사항</h3>
+
+        <textarea
+          v-model="memo"
+          placeholder="오늘 있었던 특이사항을 입력하세요"
+        ></textarea>
+
+        <div class="modal-buttons">
+
+          <button
+            @click="showMemoModal = false"
+          >
+            취소
+          </button>
+
+          <button
+            @click="submitCheckOut"
+          >
+            퇴근하기
+          </button>
+
+        </div>
+
       </div>
     </div>
 </template>
