@@ -97,3 +97,67 @@
 
   cursor: pointer;
 }
+
+.month-nav {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 20px;
+
+  margin-bottom: 20px;
+}
+
+.month-label {
+
+  font-size: 22px;
+
+  font-weight: 700;
+
+  min-width: 140px;
+
+  text-align: center;
+}
+
+.month-btn {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+
+  font-size: 24px;
+  font-weight: 300;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.08);
+
+  cursor: pointer;
+}
+
+.month-btn:disabled {
+
+  opacity: .3;
+
+  cursor: default;
+}
+
+.month-arrow {
+  font-size: 30px;
+  color: #666;
+  cursor: pointer;
+}
+
+.month-label {
+  font-size: 24px;
+  font-weight: 700;
+}

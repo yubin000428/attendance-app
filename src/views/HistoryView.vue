@@ -10,7 +10,7 @@ import {
 
 const records = ref([])
 
-// 월 선택
+// 근무기록 화살표
 const selectedMonth = ref(
   new Date()
     .toISOString()
@@ -24,6 +24,57 @@ const monthLabel = computed(() => {
 
   return `${year}년 ${Number(month)}월`
 })
+
+// 이전달
+function prevMonth() {
+
+  const [year, month] =
+    selectedMonth.value
+      .split('-')
+      .map(Number)
+
+  const date =
+    new Date(year, month - 2)
+
+  selectedMonth.value =
+    `${date.getFullYear()}-${
+      String(
+        date.getMonth() + 1
+      ).padStart(2, '0')
+    }`
+}
+
+// 다음달
+function nextMonth() {
+
+  const [year, month] =
+    selectedMonth.value
+      .split('-')
+      .map(Number)
+
+  const date =
+    new Date(year, month)
+
+  selectedMonth.value =
+    `${date.getFullYear()}-${
+      String(
+        date.getMonth() + 1
+      ).padStart(2, '0')
+    }`
+}
+
+// 현재 달 이후 못가게
+const currentMonth =
+  new Date()
+    .toISOString()
+    .slice(0, 7)
+
+const isCurrentMonth =
+  computed(
+    () =>
+      selectedMonth.value ===
+      currentMonth
+  )
 
 // 기록이 있는 월만 보여주기
 const monthOptions = computed(() => {
@@ -202,24 +253,26 @@ onMounted(() => {
 })
 </script>
 <template>
-<div class="month-box">
+<div class="month-nav">
 
-  <span>
-    📅 {{ monthLabel }}
-  </span>
-
-  <select
-    v-model="selectedMonth"
-    class="month-select"
+  <button
+    class="month-btn"
+    @click="prevMonth"
   >
-    <option
-      v-for="month in monthOptions"
-      :key="month"
-      :value="month"
-    >
-      {{ month }}
-    </option>
-  </select>
+    ◀
+  </button>
+
+  <div class="month-label">
+    {{ monthLabel }}
+  </div>
+
+  <button
+    class="month-btn"
+    @click="nextMonth"
+    :disabled="isCurrentMonth"
+  >
+    ▶
+  </button>
 
 </div>
 
