@@ -58,10 +58,7 @@ const isAdmin = computed(() => {
 })
 
 async function login() {
-  await setPersistence(
-    auth,
-    browserLocalPersistence
-  )
+  
   try {
     const provider = new GoogleAuthProvider()
 
