@@ -148,10 +148,6 @@ onMounted(() => {
 
 <template>
 
-<h2 class="page-title">
-  👥 직원 현황
-</h2>
-
 <div class="summary-cards">
 
   <div class="summary-card">
