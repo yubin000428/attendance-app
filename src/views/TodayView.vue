@@ -61,12 +61,6 @@ onMounted(() => {
       </button>
     </div>
 
-      <button
-        class="reset-btn"
-      >
-        초기화
-      </button>
-
       <div class="work-card">
       <h2>📅 오늘 근무 확인</h2>
 
