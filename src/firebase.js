@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyA8HbcLZgA8iRslkJAso_omsVkpahRUUi0",
   authDomain: "attendance-app-7fe54.firebaseapp.com",
