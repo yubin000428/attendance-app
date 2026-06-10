@@ -1,0 +1,99 @@
+.month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.month-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.month-select {
+  border: none;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.summary-wrap {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.summary-number {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.summary-label {
+  color: #777;
+  margin-top: 4px;
+}
+
+.record-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.record-date {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.record-row {
+  margin-bottom: 6px;
+}
+
+.record-time {
+  margin-top: 10px;
+  color: #1976d2;
+  font-weight: 700;
+}
+
+.month-box {
+  background: white;
+  border-radius: 14px;
+  padding: 14px 18px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 18px;
+
+  box-shadow:
+    0 2px 10px rgba(0,0,0,.06);
+}
+
+.month-box span {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.month-select {
+  border: none;
+  background: transparent;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}

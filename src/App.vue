@@ -35,10 +35,10 @@ const pageTitle = computed(() => {
       return '내 출퇴근 기록'
 
     case '/settings':
-      return '설정'
+      return '급여 계산'
 
     case '/employees':
-      return '직원 현황'
+      return '출근 현황'
 
     default:
       return '출퇴근 관리'
@@ -228,21 +228,21 @@ onMounted(() => {
   </div>
 
   <div
+    v-if="isAdmin"
+    class="menu-item"
+    @click="$router.push('/employees'); isMenuOpen=false"
+  >
+    <span>👥</span>
+    <span>출근 현황</span>
+  </div>
+
+  <div
     class="menu-item"
     :class="{ active: route.path === '/history' }"
     @click="$router.push('/history'); isMenuOpen=false"
   >
     <span>📋</span>
     <span>내 출퇴근 기록</span>
-  </div>
-
-  <div
-    v-if="isAdmin"
-    class="menu-item"
-    @click="$router.push('/employees'); isMenuOpen=false"
-  >
-    <span>👥</span>
-    <span>직원 현황</span>
   </div>
 
   <div

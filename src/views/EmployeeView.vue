@@ -13,6 +13,19 @@ import {
 
 
 const employees = ref([])
+const workingCount = computed(
+    () =>
+      employees.value.filter(
+        item => item.status === '근무중'
+      ).length
+  )
+
+  const finishedCount = computed(
+    () =>
+      employees.value.filter(
+        item => item.status === '퇴근'
+      ).length
+  )
 
 async function loadEmployees() {
 
@@ -35,19 +48,6 @@ async function loadEmployees() {
     }))
 
   const today = getWorkDate()
-  const workingCount = computed(
-    () =>
-      employees.value.filter(
-        item => item.status === '근무중'
-      ).length
-  )
-
-  const finishedCount = computed(
-    () =>
-      employees.value.filter(
-        item => item.status === '퇴근'
-      ).length
-  )
 
   const todayRecords =
     attendance.filter(
@@ -110,6 +110,7 @@ async function loadEmployees() {
   })
 }
 
+
 function formatTime(time) {
 
   if (!time) return '-'
@@ -151,20 +152,20 @@ onMounted(() => {
 <div class="summary-cards">
 
   <div class="summary-card">
-    <div class="summary-number">
-      {{ workingCount }}
-    </div>
     <div class="summary-label">
       근무중
+    </div>
+    <div class="summary-number">
+      {{ workingCount }}
     </div>
   </div>
 
   <div class="summary-card">
-    <div class="summary-number">
-      {{ finishedCount }}
-    </div>
     <div class="summary-label">
       퇴근
+    </div>
+    <div class="summary-number">
+      {{ finishedCount }}
     </div>
   </div>
 
@@ -225,5 +226,5 @@ onMounted(() => {
 </div>
 
 </template>
-
 <style src="../styles/employees.css"></style>
+
