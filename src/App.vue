@@ -3,7 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import { auth, db } from './firebase'
 import {
   GoogleAuthProvider,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
   onAuthStateChanged
 } from 'firebase/auth'
@@ -58,19 +58,18 @@ const isAdmin = computed(() => {
 })
 
 async function login() {
-
+  
   try {
+    const provider = new GoogleAuthProvider()
 
-    const provider =
-      new GoogleAuthProvider()
-
-    await signInWithRedirect(
+    const result = await signInWithPopup(
       auth,
       provider
     )
 
-  } catch (error) {
+    user.value = result.user
 
+  } catch (error) {
     console.error(error)
 
     alert(
