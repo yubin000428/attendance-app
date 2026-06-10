@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { auth } from './firebase'
+import { auth, db } from './firebase'
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -8,11 +8,21 @@ import {
   onAuthStateChanged
 } from 'firebase/auth'
 import { useRoute } from 'vue-router'
+import {
+  getDocs,
+  doc,
+  getDoc,
+  setDoc
+} from 'firebase/firestore'
 
 import './styles/attendance.css'
 
 const isMenuOpen = ref(false)
 const user = ref(null)
+const showNameModal = ref(false)
+
+const realName = ref('')
+const savedRealName = ref('')
 
 const route = useRoute()
 
@@ -76,10 +86,54 @@ async function logout() {
   isMenuOpen.value = false
 }
 
+async function saveRealName() {
+
+  if (!realName.value.trim()) {
+    alert('이름을 입력해주세요.')
+    return
+  }
+
+  await setDoc(
+    doc(db, 'users', user.value.uid),
+    {
+      realName: realName.value,
+      email: user.value.email,
+      createdAt: new Date().toISOString()
+    }
+  )
+
+  savedRealName.value = realName.value
+
+  showNameModal.value = false
+}
+
+// 로그인 > users/uid 조회 > 없음 > 이름 입력 모달 띄움
 onMounted(() => {
-  onAuthStateChanged(auth, (currentUser) => {
-    user.value = currentUser
-  })
+
+  onAuthStateChanged(
+    auth,
+    async (currentUser) => {
+
+      user.value = currentUser
+
+      if (!currentUser) return
+
+      const userRef = doc(
+        db,
+        'users',
+        currentUser.uid
+      )
+      const userSnap = await getDoc(userRef)
+
+      if (!userSnap.exists()) {
+        showNameModal.value = true
+      } else {
+        savedRealName.value =
+          userSnap.data().realName
+      }
+    }
+  )
+
 })
 </script>
 
@@ -93,7 +147,7 @@ onMounted(() => {
         ☰
       </button>
       <div v-if="user" class="profile-circle">
-        {{ user.displayName?.charAt(0).toUpperCase() }}
+        {{ savedRealName?.slice(1) }}
       </div>
       
 
@@ -207,5 +261,30 @@ onMounted(() => {
     </div>
 
     </div>
+<div
+  v-if="showNameModal"
+  class="modal-overlay"
+>
+  <div class="memo-modal">
 
+    <h3>이름 등록</h3>
+
+    <p>
+      관리자에게 표시될 이름을 입력해주세요.
+    </p>
+
+    <input
+      v-model="realName"
+      type="text"
+      placeholder="예: 홍길동"
+    />
+
+    <div class="modal-buttons">
+      <button @click="saveRealName">
+        저장
+      </button>
+    </div>
+
+  </div>
+</div>
 </template>

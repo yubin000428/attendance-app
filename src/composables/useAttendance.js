@@ -4,6 +4,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  doc,
+  getDoc,
   query,
   where
 } from 'firebase/firestore'
@@ -29,6 +31,23 @@ function getWorkDate() {
 }
 
 export function useAttendance() {
+
+  async function getRealName(uid) {
+
+    const userRef = doc(
+      db,
+      'users',
+      uid
+    )
+
+    const userSnap = await getDoc(userRef)
+
+    if (!userSnap.exists()) {
+      return null
+    }
+
+    return userSnap.data().realName
+  }
 
   async function loadAttendance() {
     const snapshot = await getDocs(
@@ -122,6 +141,10 @@ export function useAttendance() {
     return
   }
 
+  const realName = await getRealName(
+    user.uid
+  )
+
   const now = new Date()
 
   checkInTime.value = now
@@ -131,7 +154,7 @@ export function useAttendance() {
     collection(db, 'attendance'),
     {
       uid: user.uid,
-      name: user.displayName,
+      name: realName,
       email: user.email,
 
       type: 'checkin',
@@ -165,11 +188,15 @@ export function useAttendance() {
 
     const now = new Date()
 
+    const realName = await getRealName(
+      user.uid
+    )
+
     await addDoc(
     collection(db, 'attendance'),
     {
       uid: user.uid,
-      name: user.displayName,
+      name: realName,
       email: user.email,
 
       memo,
