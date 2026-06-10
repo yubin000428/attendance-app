@@ -198,11 +198,11 @@ onMounted(() => {
 
       <div>
         <div class="profile-name">
-          {{ user?.displayName || '게스트' }}
+          {{ savedRealName || '게스트' }}
         </div>
 
         <div class="profile-role">
-          {{ user ? user.email : '로그인 필요' }}
+          {{ savedRealName }} --> 직급란
         </div>
       </div>
       
